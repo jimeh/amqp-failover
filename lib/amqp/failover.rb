@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'amqp'
 require 'yaml'
 
 require 'amqp/failover/basic_client'
