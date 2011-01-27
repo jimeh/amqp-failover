@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module SpecServer
+module ServerHelper
   include AMQP::Server
   
   class << self
