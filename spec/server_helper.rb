@@ -10,9 +10,9 @@ module ServerHelper
     attr_writer :log
   end
   
+  # log & silence STDOUT output
   def log(*args)
     @@log << args
-    # silence Output
   end
   
 end
