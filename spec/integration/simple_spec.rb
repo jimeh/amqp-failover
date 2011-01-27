@@ -4,13 +4,14 @@ require 'spec_helper'
 require 'amqp/server'
 require 'spec_server'
 
-describe "Simple AMQP connection with Failover feature loaded" do
+describe "Simple AMQP connection with FailoverClient" do
   
   before(:all) do
     @log = SpecServer.log
   end
     
   it "should be connected" do
+    AMQP.client = AMQP::FailoverClient
     EM.run {
       @sig = EM.start_server('localhost', 15672, SpecServer)
       conn = AMQP.connect(:host => 'localhost', :port => 15672)
