@@ -9,7 +9,7 @@ describe "Simple AMQP connection with FailoverClient" do
   before(:all) do
     @log = SpecServer.log
   end
-    
+  
   it "should be connected" do
     AMQP.client = AMQP::FailoverClient
     EM.run {

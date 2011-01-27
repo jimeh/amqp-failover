@@ -43,4 +43,3 @@ module AMQP
     end # BasicClient
   end # Failover
 end # AMQP
-
