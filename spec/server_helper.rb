@@ -5,13 +5,13 @@ module ServerHelper
   
   class << self
     def log
-      @log ||= []
+      @@log ||= []
     end
     attr_writer :log
   end
   
   def log(*args)
-    SpecServer.log << args
+    @@log << args
     # silence Output
   end
   
