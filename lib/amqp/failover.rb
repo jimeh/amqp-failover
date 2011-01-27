@@ -2,7 +2,7 @@
 
 require 'yaml'
 
-require 'amqp/failover/basic_client'
+require 'amqp/failover_client'
 require 'amqp/failover/config'
 require 'amqp/failover/fallback'
 require 'amqp/failover/logger'
