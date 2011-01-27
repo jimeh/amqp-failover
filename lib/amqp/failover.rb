@@ -4,10 +4,11 @@ require 'yaml'
 
 require 'amqp/failover_client'
 require 'amqp/failover/config'
-require 'amqp/failover/fallback'
+require 'amqp/failover/disconnected'
 require 'amqp/failover/logger'
 require 'amqp/failover/logic'
 require 'amqp/failover/logic/failed_config'
+require 'amqp/failover/server_discovery'
 require 'amqp/failover/version'
 
 module AMQP

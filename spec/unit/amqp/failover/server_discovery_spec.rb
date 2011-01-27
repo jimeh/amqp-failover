@@ -2,9 +2,9 @@
 $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
 
 require 'spec_helper'
-require 'fallback_helper'
+require 'server_discovery_helper'
 
-describe AMQP::Failover::Fallback do
+describe AMQP::Failover::ServerDiscovery do
   
   before(:each) do
     $called = []
@@ -15,7 +15,7 @@ describe AMQP::Failover::Fallback do
   it "should initialize" do
     EM.run {
       EM.start_server('127.0.0.1', 9999)
-      @mon = FallbackHelper.monitor(@args) do
+      @mon = ServerDiscoveryHelper.monitor(@args) do
         $called << :done_block
         EM.stop_event_loop
       end
@@ -32,7 +32,7 @@ describe AMQP::Failover::Fallback do
   
   it "should retry on error" do
     EM.run {
-      @mon = FallbackHelper.monitor(@args) do
+      @mon = ServerDiscoveryHelper.monitor(@args) do
         $called << :done_block
         EM.stop_event_loop
       end
@@ -48,4 +48,3 @@ describe AMQP::Failover::Fallback do
   end
   
 end
-

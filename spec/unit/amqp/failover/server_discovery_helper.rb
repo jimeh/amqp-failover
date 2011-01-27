@@ -1,4 +1,4 @@
-class FallbackHelper < AMQP::Failover::Fallback
+class ServerDiscoveryHelper < AMQP::Failover::ServerDiscovery
   
   class << self
     alias :real_start_monitoring :start_monitoring

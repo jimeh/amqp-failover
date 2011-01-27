@@ -2,10 +2,18 @@
 
 module AMQP
   module Failover
-    class Fallback < EM::Connection
+    class ServerDiscovery < EM::Connection
       
       class << self
         attr_accessor :connection
+      end
+      
+      def self.monitor(conf = {}, &block)
+        if EM.reactor_running?
+          start_monitoring(conf, &block)
+        else
+          EM.run { start_monitoring(conf, &block) }
+        end
       end
       
       def initialize(args)
@@ -18,15 +26,7 @@ module AMQP
         @timer.cancel
         close_connection
       end
-      
-      def self.monitor(conf = {}, &block)
-        if EM.reactor_running?
-          start_monitoring(conf, &block)
-        else
-          EM.run { start_monitoring(conf, &block) }
-        end
-      end
-      
+            
       def self.start_monitoring(conf = {}, &block)
         conf = conf.clone
         conf[:done] = block
@@ -39,6 +39,6 @@ module AMQP
         EM.connect(conf[:host], conf[:port], self, conf)
       end
       
-    end # Fallback
+    end # ServerDiscovery
   end # Failover
 end # AMQP
