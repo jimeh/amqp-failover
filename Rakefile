@@ -9,9 +9,14 @@ Bundler::GemHelper.install_tasks
 #
 
 require 'rspec/core/rake_task'
-desc "Run all specs"
-task :spec => ["spec:unit", "spec:integration"]
 
+RSpec::Core::RakeTask.new('spec:all') do |spec|
+  spec.pattern = [ 'spec/unit/**/*_spec.rb',
+                   'spec/integration/**/*_spec.rb' ]
+end
+
+desc "Run unit specs"
+task :spec => ["spec:unit"]
 RSpec::Core::RakeTask.new('spec:unit') do |spec|
   spec.pattern = 'spec/unit/**/*_spec.rb'
 end
