@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module AMQP
-  module Failover
+  class Failover
     class Logger
       
       attr_accessor :enabled

@@ -5,7 +5,7 @@ require 'spec_helper'
 require 'amqp/server'
 require 'server_helper'
 
-describe "Simple AMQP connection with FailoverClient" do
+describe "Simple AMQP connection with FailoverClient loaded" do
   
   before(:all) do
     @log = ServerHelper.log
@@ -26,6 +26,23 @@ describe "Simple AMQP connection with FailoverClient" do
         EM.stop
       }
     }
+  end
+  
+  it "should connect and get disconnected" do
+    lambda {
+      EM.run {
+        spid = start_server
+        conn = AMQP.connect(:host => 'localhost', :port => 15672)
+        EM.add_timer(0.1) {
+          conn.should be_connected
+          stop_server(spid)
+          EM.add_timer(0.1) {
+            conn.should_not be_connected
+            EM.stop
+          }
+        }
+      }
+    }.should raise_error(AMQP::Error, "Could not connect to server localhost:15672")
   end
   
 end

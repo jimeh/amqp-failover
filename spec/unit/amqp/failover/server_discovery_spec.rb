@@ -4,7 +4,7 @@ $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
 require 'spec_helper'
 require 'server_discovery_helper'
 
-describe AMQP::Failover::ServerDiscovery do
+describe 'AMQP::Failover::ServerDiscovery' do
   
   before(:each) do
     $called = []

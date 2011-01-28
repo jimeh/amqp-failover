@@ -16,3 +16,21 @@ module ServerHelper
   end
   
 end
+
+
+#
+# Helper methods
+#
+
+def start_server(port = 15762, timeout = 2)
+  bef_fork = EM.forks.clone
+  EM.fork {
+    EM.start_server('localhost', port, ServerHelper)
+    EM.add_timer(timeout) { EM.stop }
+  }
+  (EM.forks - bef_fork).first
+end
+
+def stop_server(pid)
+  Process.kill('TERM', pid)
+end

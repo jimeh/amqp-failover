@@ -1,18 +1,18 @@
 # encoding: utf-8
 
 module AMQP
-  module Failover
+  class Failover
     class ServerDiscovery < EM::Connection
       
       class << self
         attr_accessor :connection
       end
       
-      def self.monitor(conf = {}, &block)
+      def self.monitor(conf = {}, retry_interval = nil, &block)
         if EM.reactor_running?
-          start_monitoring(conf, &block)
+          start_monitoring(conf, retry_interval, &block)
         else
-          EM.run { start_monitoring(conf, &block) }
+          EM.run { start_monitoring(conf, retry_interval, &block) }
         end
       end
       
@@ -27,10 +27,11 @@ module AMQP
         close_connection
       end
             
-      def self.start_monitoring(conf = {}, &block)
+      def self.start_monitoring(conf = {}, retry_interval = nil, &block)
         conf = conf.clone
+        retry_interval ||= 5
         conf[:done] = block
-        conf[:timer] = EM::PeriodicTimer.new(conf[:retry_interval] || 5) do
+        conf[:timer] = EM::PeriodicTimer.new(retry_interval) do
           @connection = connect(conf)
         end
       end
