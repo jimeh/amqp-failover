@@ -7,8 +7,12 @@ module AMQP
       attr_accessor :last_fail
       
       def initialize(hash = {}, last_fail_date = nil)
-        self.replace(symbolize_keys(hash))
+        self.replace(symbolize_keys(defaults.merge(hash)))
         self.last_fail = last_fail_date if last_fail_date
+      end
+      
+      def defaults
+        AMQP.settings
       end
       
       def symbolize_keys(hash = {})
@@ -30,7 +34,7 @@ module AMQP
           end
           return other.last_fail <=> self.last_fail
         end
-        return 0
+        super(other)
       end
       
     end # Config

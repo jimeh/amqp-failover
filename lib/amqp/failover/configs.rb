@@ -46,7 +46,7 @@ module AMQP
       end
       
       def set(conf = {}, ref = nil)
-        conf = Config.new(default_config.merge(conf))
+        conf = Failover::Config.new(conf) if !conf.is_a?(Failover::Config)
         self << conf if (index = self.index(conf)).nil?
         if ref
           refs[ref] = (index || self.index(conf))
@@ -75,7 +75,7 @@ module AMQP
         end
       end
       
-      def self.load_array(confs = [])
+      def load_array(confs = [])
         self.clear
         confs.each do |conf|
           conf = AMQP::Client.parse_amqp_url(conf) if conf.is_a?(::String)
@@ -84,11 +84,7 @@ module AMQP
       end
       
       def load_hash(conf = {})
-        set(Config.new(conf))
-      end
-      
-      def default_config
-        AMQP.settings
+        set(conf)
       end
       
     end # Config

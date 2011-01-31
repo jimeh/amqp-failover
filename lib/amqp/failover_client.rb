@@ -38,7 +38,9 @@ module AMQP
         logger.error(log_message)
         logger.info(log_message)
         
-        fallback(@failover.primary, @failover.fallback_interval) if @failover.primary == @settings
+        if @failover.options[:fallback] && @failover.primary == @settings
+          fallback(@failover.primary, @failover.fallback_interval)
+        end
         @settings = new_settings
         reconnect
       else
@@ -53,6 +55,7 @@ module AMQP
     end
     
     def fallback_callback
+      #TODO: Figure out a way to artificially trigger EM to disconnect on fallback without channels being closed.
       @fallback_callback ||= proc { |conf, retry_interval|
         clean_exit("Primary server (#{conf[:host]}:#{conf[:port]}) is back. " +
                    "Performing clean exit to be relaunched with primary config.")

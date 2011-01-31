@@ -20,7 +20,7 @@ module AMQP
     attr_accessor :fallback
     
     def initialize(confs = nil, opts = {})
-      @configs = Configs.new(confs)
+      @configs = Failover::Configs.new(confs)
       @options = default_options.merge(opts)
     end
     
@@ -32,7 +32,7 @@ module AMQP
     def default_options
       { :retry_timeout => 1,
         :selection => :sequential, #TODO: Impliment next server selection algorithm
-        :fallback => false,
+        :fallback => false, #TODO: Enable by default once a sane solution is found
         :fallback_interval => 10 }
     end
     
@@ -54,17 +54,6 @@ module AMQP
     
     def configs
       @configs ||= Config.new
-    end
-    
-    def configs=(confs = [])
-      @configs = nil
-      confs.each do |conf|
-        if conf.is_a?(Array)
-          add_config(conf[1], conf[0])
-        else
-          add_config(conf)
-        end
-      end
     end
     
     def add_config(conf = {}, ref = nil)
