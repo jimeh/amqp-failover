@@ -9,13 +9,14 @@ describe 'AMQP::Failover::ServerDiscovery' do
   before(:each) do
     $called = []
     $start_count = 0
-    @args = { :host => 'localhost', :port => 9999, :retry_interval => 0.01 }
+    @args = { :host => 'localhost', :port => 9999 }
+    @retry_interval = 0.01
   end
   
   it "should initialize" do
     EM.run {
       EM.start_server('127.0.0.1', 9999)
-      @mon = ServerDiscoveryHelper.monitor(@args) do
+      @mon = ServerDiscoveryHelper.monitor(@args, @retry_interval) do
         $called << :done_block
         EM.stop_event_loop
       end
@@ -32,7 +33,7 @@ describe 'AMQP::Failover::ServerDiscovery' do
   
   it "should retry on error" do
     EM.run {
-      @mon = ServerDiscoveryHelper.monitor(@args) do
+      @mon = ServerDiscoveryHelper.monitor(@args, @retry_interval) do
         $called << :done_block
         EM.stop_event_loop
       end
