@@ -2,42 +2,47 @@
 
 module AMQP
   class Failover
-    class Configs < Array
+    class Configurations < Array
       
       def initialize(confs = nil)
         load(confs)
       end
       
       def [](*args)
-        return super(*args) if args[0].is_a?(Fixnum)
-        return get_primary if args[0] == :primary
-        get(args[0])
+        if args[0].is_a?(Symbol)
+          return primary if args[0] == :primary
+          get(args[0])
+        else
+          super(*args)
+        end
       end
       
       def []=(*args)
-        return super(*args) if args[0].is_a?(Fixnum)
-        return set_primary(args.last, args[0]) if args[0] == :primary
-        set(args.last, args[0])
+        if args[0].is_a?(Symbol)
+          return primary = args.last if args[0] == :primary
+          set(args.last, args[0])
+        end
+        super(*args)
       end
       
       def refs
         @refs ||= {}
       end
       
+      def primary_ref
+        @primary_ref ||= 0
+      end
+      
+      def primary_ref=(ref)
+        @primary_ref = ref
+      end
+      
       def primary
-        @primary ||= 0
+        get(primary_ref) || AMQP.settings
       end
       
-      def primary=(ref)
-        @primary = ref
-      end
-      
-      def get_primary
-        get(primary) || default_config
-      end
-      
-      def set_primary(conf = {})
-        set(conf, primary)
+      def primary=(conf = {})
+        set(conf, primary_ref)
       end
       
       def get(ref = nil)
@@ -47,10 +52,13 @@ module AMQP
       
       def set(conf = {}, ref = nil)
         conf = Failover::Config.new(conf) if !conf.is_a?(Failover::Config)
-        self << conf if (index = self.index(conf)).nil?
-        if ref
-          refs[ref] = (index || self.index(conf))
+        if (index = self.index(conf)).nil?
+          self << conf
+        else
+          conf = self[index]
         end
+        refs[ref] = (index || self.index(conf)) if ref
+        conf
       end
       
       def find_next(conf = {})
@@ -68,17 +76,18 @@ module AMQP
       end
       
       def load(conf)
-        if conf.is_a?(::Array)
+        if conf.is_a?(Array)
           load_array(conf)
-        elsif conf.is_a?(::Hash)
+        elsif conf.is_a?(Hash)
           load_hash(conf)
         end
       end
       
       def load_array(confs = [])
         self.clear
+        refs = {}
         confs.each do |conf|
-          conf = AMQP::Client.parse_amqp_url(conf) if conf.is_a?(::String)
+          conf = AMQP::Client.parse_amqp_url(conf) if conf.is_a?(String)
           load_hash(conf)
         end
       end

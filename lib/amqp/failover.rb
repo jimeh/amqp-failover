@@ -4,7 +4,7 @@ require 'yaml'
 
 require 'amqp/failover_client'
 require 'amqp/failover/config'
-require 'amqp/failover/configs'
+require 'amqp/failover/configurations'
 require 'amqp/failover/logger'
 require 'amqp/failover/server_discovery'
 require 'amqp/failover/version'
@@ -20,7 +20,7 @@ module AMQP
     attr_accessor :fallback
     
     def initialize(confs = nil, opts = {})
-      @configs = Failover::Configs.new(confs)
+      @configs = Failover::Configurations.new(confs)
       @options = default_options.merge(opts)
     end
     
@@ -53,7 +53,7 @@ module AMQP
     end
     
     def configs
-      @configs ||= Config.new
+      @configs ||= Configurations.new
     end
     
     def add_config(conf = {}, ref = nil)
