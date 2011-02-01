@@ -4,11 +4,18 @@ $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
 require 'spec_helper'
 require 'amqp/server'
 require 'server_helper'
+require 'logger_helper'
 
 describe "Full Failover support of AMQP gem" do
   
+  before(:all) do
+    @flog = LoggerHelper.new
+    AMQP::Failover.logger = @flog
+  end
+  
   after(:all) do
     ServerHelper.clear_logs
+    AMQP::Failover.logger = nil
   end
   
   it "should be able to connect" do
@@ -41,9 +48,14 @@ describe "Full Failover support of AMQP gem" do
           serv1.stop
           EM.add_timer(0.1) {
             conn.should be_connected
+            [:error, :info].each do |i|
+              @flog.send("#{i}_log").should have(1).item
+              @flog.send("#{i}_log")[0][0].should match(/connect to or lost connection.+25672.+attempting connection.+35672/i)
+            end
             conn.settings[:port].should == 35672
             serv1.log.should have(3).items
             serv2.log.should have(3).items
+            conn.close
             EM.add_timer(0.1) {
               serv2.stop
               EM.stop

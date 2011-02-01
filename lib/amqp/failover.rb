@@ -24,9 +24,12 @@ module AMQP
       @options = default_options.merge(opts)
     end
     
-    # pluggable logger specifically for tracking failover and fallbacks
-    def self.logger
-      @logger ||= Logger.new
+    class << self
+      # pluggable logger specifically for tracking failover and fallbacks
+      def logger
+        @logger ||= Logger.new
+      end
+      attr_writer :logger
     end
     
     def default_options

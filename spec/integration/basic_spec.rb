@@ -7,7 +7,7 @@ require 'amqp'
 require 'amqp/server'
 require 'server_helper'
 
-describe "A simple AMQP connection with FailoverClient loaded" do
+describe "Basic AMQP connection with FailoverClient loaded" do
   
   after(:all) do
     ServerHelper.clear_logs
