@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'amqp', '>= 0.7.0'
   
   s.add_development_dependency 'rake', '>= 0.8.7'
-  s.add_development_dependency 'rack-test', '>= 0.5.6'
   s.add_development_dependency 'rspec', '>= 2.1.0'
   s.add_development_dependency 'yard', '>= 0.6.3'
   s.add_development_dependency 'json', '>= 1.5.0'
