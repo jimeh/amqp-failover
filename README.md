@@ -1,6 +1,6 @@
 # amqp-failover #
 
-Add multi-server support with failover and fallback to the [amqp](https://github.com/ruby-amqp/amqp) gem.
+Add multi-server support with failover and fallback to the [amqp](https://github.com/ruby-amqp/amqp) gem. Failover is configured by providing multiple servers/configurations to `AMQP.start` or `AMQP.connect`. Both methods will still accept the same options input as they always have, they simply now support additional forms of options which when used, enables the failover features.
 
 
 ## Basic Usage ##
@@ -50,9 +50,15 @@ Specify AMQP servers and Failover options by passing a Hash containing a `:hosts
 ## Failover Options ##
 
 * `:retry_timeout`, time to wait before retrying a specific AMQP config after failure.
+* `:primary_config`, specify which of the supplied configurations is it the primary one. The default value is 0, the first item in the config array. Use 1 for the second and so on.
 * `:fallback`, check for the return of the primary server, and fallback to it if and when it returns. WARNING: This currently calls `Process.exit` cause I haven't figured out a way to artificially kill the EM connection without the AMQP channels also being closed, which causes nothing to work even after EM connects to the primary server. It works for me cause dead workers are automatically relaunched with their default config.
 * `:fallback_interval`, seconds between each check for original server if :fallback is true.
 * `:selection`, not yet implemented.
+
+
+## Notes ##
+
+I would recommend you test the failover functionality in your own infrastructure before deploy to production, as this gem is still very much alpha/beta quality, and it does do a little bit of monkey patching to the amqp gem. That said, it there's a number of specs which should ensure things work as advertised, and nothing breaks. We are currently using it at Global Personals without any problems.
 
 
 ## Todo ##
