@@ -65,6 +65,7 @@ I would recommend you test the failover functionality in your own infrastructure
 
 * Figure out a sane way to fallback without having to kill the Ruby process.
 * Better Readme/Documentation.
+* Add option for next server selection on failover to be selected by random rather than next on the list.
 * Convince get failover functionality merged in, or otherwise rewritten/added to the official AMQP gem.
 
 
