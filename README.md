@@ -3,6 +3,11 @@
 Add multi-server support with failover and fallback to the [amqp](https://github.com/ruby-amqp/amqp) gem. Failover is configured by providing multiple servers/configurations to `AMQP.start` or `AMQP.connect`. Both methods will still accept the same options input as they always have, they simply now support additional forms of options which when used, enables the failover features.
 
 
+## Installation ##
+
+    gem install amqp-failover
+
+
 ## Basic Usage ##
 
     require 'mq'
