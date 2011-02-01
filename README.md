@@ -85,7 +85,7 @@ I would recommend you test the failover functionality in your own infrastructure
 * Send me a pull request. Bonus points for topic branches.
 
 
-## Liccense and Copyright ##
+## License and Copyright ##
 
 Copyright (c) 2011 Jim Myhrberg & Global Personals, Ltd.
 
