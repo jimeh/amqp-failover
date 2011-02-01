@@ -60,7 +60,6 @@ module AmqpServer
 
   # customize log output
   def log(*args)
-    # puts "\n>>>>>> Process.pid / $PORT: " + Process.pid.inspect + " / #{$PORT}\n"
     args = {:method => args[0], :class => args[1].payload.class, :pid => Process.pid}
     filename = File.expand_path("server_helper-port#{$PORT}.log", File.dirname(__FILE__))
     File.open(filename, 'a') do |f|

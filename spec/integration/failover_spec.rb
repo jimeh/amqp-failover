@@ -13,7 +13,7 @@ describe "Full Failover support of AMQP gem" do
     AMQP::Failover.logger = @flog
   end
   
-  after(:all) do
+  after(:each) do
     ServerHelper.clear_logs
     AMQP::Failover.logger = nil
   end

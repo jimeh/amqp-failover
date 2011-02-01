@@ -9,7 +9,7 @@ require 'server_helper'
 
 describe "Basic AMQP connection with FailoverClient loaded" do
   
-  after(:all) do
+  after(:each) do
     ServerHelper.clear_logs
   end
   
