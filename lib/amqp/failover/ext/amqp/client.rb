@@ -22,6 +22,8 @@ module AMQP
       # 
       # Available failover options are:
       #   - :retry_timeout, time to wait before retrying a specific AMQP config after failure.
+      #   - :primary_config, specify which of the supplied configurations is it the primary one. The default
+      #                      value is 0, the first item in the config array. Use 1 for the second and so on.
       #   - :fallback, check for the return of the primary server, and fallback to it if and when it returns.
       #   - :fallback_interval, seconds between each check for original server if :fallback is true.
       #   - :selection, not yet implimented.

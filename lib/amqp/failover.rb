@@ -22,6 +22,7 @@ module AMQP
     def initialize(confs = nil, opts = {})
       @configs = Failover::Configurations.new(confs)
       @options = default_options.merge(opts)
+      @configs.primary_ref = @options[:primary_config]
     end
     
     class << self
@@ -33,9 +34,10 @@ module AMQP
     end
     
     def default_options
-      { :retry_timeout => 1,
-        :selection => :sequential, #TODO: Impliment next server selection algorithm
-        :fallback => false, #TODO: Enable by default once a sane implimentation is figured out
+      { :primary_config => 0,
+        :retry_timeout => 1,
+        :selection => :sequential, #TODO: Implement next server selection algorithm
+        :fallback => false, #TODO: Enable by default once a sane implementation is figured out
         :fallback_interval => 10 }
     end
     

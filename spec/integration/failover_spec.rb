@@ -6,7 +6,7 @@ require 'amqp/server'
 require 'server_helper'
 require 'logger_helper'
 
-describe "Full Failover support of AMQP gem" do
+describe "Failover support loaded into AMQP gem" do
   
   before(:each) do
     @flog = LoggerHelper.new
@@ -118,6 +118,24 @@ describe "Full Failover support of AMQP gem" do
       @flog.send("#{i}_log").should have(2).item
       @flog.send("#{i}_log")[1][0].should match(/primary server.+45672.+performing clean exit/i)
     end
+  end
+  
+  it "should abide to :primary_config option" do
+    port1 = 75672
+    port2 = 65672
+    EM.run {
+      serv = start_server(port1)
+      EM.add_timer(0.1) {
+        conn = AMQP.connect({:hosts => [{:port => port1}, {:port => port2}], :primary_config => 1})
+        conn.failover.primary[:port].should == port2
+        conn.settings[:port].should == port2
+        conn.settings.should == conn.failover.primary
+        EM.add_timer(0.1) {
+          conn.should be_connected
+          EM.stop
+        }
+      }
+    }
   end
   
 end
