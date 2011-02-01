@@ -66,15 +66,6 @@ module AMQP
         self[(current+1 == self.size) ? 0 : current+1] if current
       end
       
-      def load_file(file, env = nil)
-        raise ArgumentError, "Can't find #{file}" unless File.exists?(file)
-        load(YAML.load_file(file)[env || "development"])
-      end
-      
-      def load_yaml(data, env = nil)
-        load(YAML.load(data)[env || "development"])
-      end
-      
       def load(conf)
         if conf.is_a?(Array)
           load_array(conf)
