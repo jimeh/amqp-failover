@@ -34,7 +34,7 @@ module AMQP
           end
           return other.last_fail <=> self.last_fail
         end
-        super(other)
+        return 0
       end
       
     end # Config

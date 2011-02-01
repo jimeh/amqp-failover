@@ -12,7 +12,24 @@ module AMQP
     
     def self.extended(base)
       if (base.failover = base.settings.delete(:failover))
-        base.on_disconnect = base.method(:failover_leap)
+        base.on_disconnect = base.method(:disconnected)
+      end
+    end
+    
+    def failover_switch
+      if (new_settings = @failover.from(@settings))
+        log_message = "Could not connect to or lost connection to server #{@settings[:host]}:#{@settings[:port]}. " +
+                      "Attempting connection to: #{new_settings[:host]}:#{new_settings[:port]}"
+        logger.error(log_message)
+        logger.info(log_message)
+        
+        if @failover.options[:fallback] && @failover.primary == @settings
+          fallback(@failover.primary, @failover.fallback_interval)
+        end
+        @settings = new_settings
+        reconnect
+      else
+        raise Error, "Could not connect to server #{@settings[:host]}:#{@settings[:port]}"
       end
     end
     
@@ -29,23 +46,6 @@ module AMQP
       logger.info(msg)
       logger.error(msg)
       Process.exit
-    end
-    
-    def failover_leap
-      if (new_settings = @failover.from(@settings))
-        log_message = "Could not connect to or lost connection to server #{@settings[:host]}:#{@settings[:port]}. " +
-                      "Attempting connection to: #{new_settings[:host]}:#{new_settings[:port]}"
-        logger.error(log_message)
-        logger.info(log_message)
-        
-        if @failover.options[:fallback] && @failover.primary == @settings
-          fallback(@failover.primary, @failover.fallback_interval)
-        end
-        @settings = new_settings
-        reconnect
-      else
-        raise Error, "Could not connect to server #{@settings[:host]}:#{@settings[:port]}"
-      end
     end
     
     def fallback(conf = {}, retry_interval = nil)

@@ -32,7 +32,7 @@ module AMQP
     def default_options
       { :retry_timeout => 1,
         :selection => :sequential, #TODO: Impliment next server selection algorithm
-        :fallback => false, #TODO: Enable by default once a sane solution is found
+        :fallback => false, #TODO: Enable by default once a sane implimentation is figured out
         :fallback_interval => 10 }
     end
     
@@ -58,7 +58,7 @@ module AMQP
     
     def add_config(conf = {}, ref = nil)
       index = configs.index(conf)
-      configs << Config::Failed.new(conf) if index.nil?
+      configs.set(conf) if index.nil?
       refs[ref] = (index || configs.index(conf)) if !ref.nil?
     end
     
@@ -70,12 +70,12 @@ module AMQP
     
     def failed_with(conf = {}, ref = nil, time = nil)
       time ||= Time.now
-      if index = configs.index(conf)
+      if !(index = configs.index(conf)).nil?
         configs[index].last_fail = time
         @latest_failed = configs[index]
       else
-        configs << Config::Failed.new(conf, time)
-        @latest_failed = configs.last
+        @latest_failed = configs.set(conf)
+        configs.last.last_fail = time
       end
       refs[ref] = (index || configs.index(conf)) if !ref.nil?
     end
@@ -87,7 +87,7 @@ module AMQP
       index = configs.index(after)
       available = (index > 0) ? configs[index+1..-1] + configs[0..index-1] : configs[1..-1]
       available.each do |conf|
-        return conf if conf.last_fail.nil? || (conf.last_fail + retry_timeout.seconds) < Time.now
+        return conf if conf.last_fail.nil? || (conf.last_fail.to_i + retry_timeout) < Time.now.to_i
       end
       return nil
     end

@@ -13,6 +13,11 @@ describe 'AMQP::Failover::ServerDiscovery' do
     @retry_interval = 0.01
   end
   
+  after(:all) do
+    $called = nil
+    $start_count = nil
+  end
+  
   it "should initialize" do
     EM.run {
       EM.start_server('127.0.0.1', 9999)

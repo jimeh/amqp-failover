@@ -25,5 +25,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack-test', '>= 0.5.6'
   s.add_development_dependency 'rspec', '>= 2.1.0'
   s.add_development_dependency 'yard', '>= 0.6.3'
+  s.add_development_dependency 'json', '>= 1.5.0'
   s.add_development_dependency 'ruby-debug'
 end

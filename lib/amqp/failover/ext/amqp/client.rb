@@ -1,9 +1,11 @@
 # encoding: utf-8
 
+AMQP.client = AMQP::FailoverClient
+
 module AMQP
   module Client
+    
     class << self
-      alias :connect_without_failover :connect
       
       # Connect with Failover supports specifying multiple AMQP servers and configurations.
       # 
@@ -20,13 +22,15 @@ module AMQP
       # 
       # Available failover options are:
       #   - :retry_timeout, time to wait before retrying a specific AMQP config after failure.
-      #   - :fallback, monitor for original server's return and fallback to it if so.
+      #   - :fallback, check for the return of the primary server, and fallback to it if and when it returns.
       #   - :fallback_interval, seconds between each check for original server if :fallback is true.
+      #   - :selection, not yet implimented.
       # 
       def connect_with_failover(opts = nil)
         opts = parse_amqp_url_or_opts(opts)
         connect_without_failover(opts)
       end
+      alias :connect_without_failover :connect
       alias :connect :connect_with_failover
       
       def parse_amqp_url_or_opts(opts = nil)
@@ -35,7 +39,7 @@ module AMQP
         elsif opts.is_a?(Array)
           opts = init_failover(opts)
         elsif opts.is_a?(Hash) && opts[:hosts].is_a?(Array)
-          confs = opts.delete[:hosts]
+          confs = opts.delete(:hosts)
           opts = init_failover(confs, opts)
         end
         opts
@@ -43,10 +47,19 @@ module AMQP
       
       def init_failover(confs = nil, opts = {})
         if !confs.nil? && confs.size > 0
-          failover.primary.merge({ :failover => Failover.new(confs, opts) })
+          failover = Failover.new(confs, opts)
+          failover.primary.merge({ :failover => failover })
         end
       end
-    
+      
     end # << self
+    
+    def disconnected_with_failover
+      return failover_switch if @failover
+      disconnected_without_failover
+    end
+    alias :disconnected_without_failover :disconnected
+    alias :disconnected :disconnected_with_failover
+    
   end # Client
 end # AMQP
