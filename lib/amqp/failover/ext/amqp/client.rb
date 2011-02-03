@@ -29,13 +29,13 @@ module AMQP
       #   - :selection, not yet implimented.
       # 
       def connect_with_failover(opts = nil)
-        opts = parse_amqp_url_or_opts(opts)
+        opts = parse_amqp_url_or_opts_with_failover(opts)
         connect_without_failover(opts)
       end
       alias :connect_without_failover :connect
       alias :connect :connect_with_failover
       
-      def parse_amqp_url_or_opts(opts = nil)
+      def parse_amqp_url_or_opts_with_failover(opts = nil)
         if opts.is_a?(String) && opts.index(',').nil?
           opts = init_failover(opts.split(','))
         elsif opts.is_a?(Array)
@@ -56,12 +56,19 @@ module AMQP
       
     end # << self
     
-    def disconnected_with_failover
-      return failover_switch if @failover
-      disconnected_without_failover
+    def initialize_with_failover(opts = {})
+      @failover = opts.delete(:failover) if opts.has_key?(:failover)
+      initialize_without_failover(opts)
     end
-    alias :disconnected_without_failover :disconnected
-    alias :disconnected :disconnected_with_failover
+    alias :initialize_without_failover :initialize
+    alias :initialize :initialize_with_failover
+    
+    def unbind_with_failover
+      @on_disconnect = method(:failover_switch) if @failover
+      unbind_without_failover
+    end
+    alias :unbind_without_failover :unbind
+    alias :unbind :unbind_with_failover
     
   end # Client
 end # AMQP

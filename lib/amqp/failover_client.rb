@@ -10,12 +10,6 @@ module AMQP
     attr_accessor :settings
     attr_accessor :on_disconnect
     
-    def self.extended(base)
-      if (base.failover = base.settings.delete(:failover))
-        base.on_disconnect = base.method(:disconnected)
-      end
-    end
-    
     def failover_switch
       if (new_settings = @failover.from(@settings))
         log_message = "Could not connect to or lost connection to server #{@settings[:host]}:#{@settings[:port]}. " +
@@ -26,7 +20,7 @@ module AMQP
         if @failover.options[:fallback] && @failover.primary == @settings
           fallback(@failover.primary, @failover.fallback_interval)
         end
-        @settings = new_settings
+        @settings = new_settings.merge({:failover => @failover})
         reconnect
       else
         raise Error, "Could not connect to server #{@settings[:host]}:#{@settings[:port]}"
